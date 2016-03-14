@@ -45,7 +45,7 @@ object CookiejarSpecification extends Properties("CookieHandling") {
 
       val addingPipeline = (req: HttpRequest) ⇒ {
         val resp = HttpResponse()
-        future {
+        Future {
           val setCookieHeaders = cookies.map(`Set-Cookie`(_))
           val cookiedresp = resp.withHeaders(setCookieHeaders)
           cookiedresp
@@ -53,7 +53,7 @@ object CookiejarSpecification extends Properties("CookieHandling") {
       }
 
       val testingPipeline = (req: HttpRequest) ⇒ {
-        future {
+        Future {
           val httpCookies = req.headers.collect({ case Cookie(httpCookies) ⇒ httpCookies }).flatten
           if (httpCookies.length > cookies.length) throw new Exception("received more cookies than expected")
           else if (!cookies.forall(expected ⇒ httpCookies.exists(received ⇒ received.name == expected.name))) throw new Exception("reponse didn't contain cookies for all names")
