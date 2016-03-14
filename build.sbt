@@ -14,7 +14,7 @@ scalacOptions ++= Seq(
   "-language:existentials",
   "-language:higherKinds",
   "-language:implicitConversions",
-  "-target:jvm-1.7",
+  "-target:jvm-1.8",
   "-unchecked",
   "-Xfatal-warnings",
   "-Xlint",
