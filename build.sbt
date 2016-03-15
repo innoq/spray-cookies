@@ -2,6 +2,7 @@ import scalariform.formatter.preferences._
 
 
 name:="spray-cookies"
+organization:="de.postlab.from.martijnhoekstra"
 
 version:="0.1-SNAPSHOT"
 
@@ -30,6 +31,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.4.0",
   "org.scalacheck" %% "scalacheck" % "1.11.3" % "test"
 )
+
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
 scalariformSettings
 
