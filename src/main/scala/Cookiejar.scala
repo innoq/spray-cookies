@@ -21,12 +21,26 @@ class CookieJar(blacklist: EffectiveTldList) {
     }
     implicit def toStoredCookie(src: HttpCookie)(implicit uri: Uri) = {
       val domain = src.domain.getOrElse(uri.authority.host.address)
-      val path = src.path.getOrElse(uri.path.toString)
+      val path = src.path.getOrElse(extractDirectoryPath(uri))
       val expiration = src.expires match {
         case x: Some[DateTime] ⇒ x
         case None              ⇒ src.maxAge.map(age ⇒ DateTime.now + age)
       }
       StoredCookie(src.name, src.content, expiration, domain, path, src.httpOnly, src.secure)
+    }
+
+    /**
+     * extracts part of url path up to last / as default if no path param is given explicitly
+     *
+     * according to RFC 6265, section 4.1.2.4 if there is no path explicitly given in set-cookie, the path of the url
+     * should be used up to the last '/' character, which the RFC describes as ''the "directory" of the
+     * request-uri's path component''
+     * @param uri request uri
+     * @return extracted path component
+     */
+    private def extractDirectoryPath(uri: Uri): String = {
+      val i = uri.path.toString.lastIndexOf("/")
+      uri.path.toString.substring(0, i + 1) // take the path
     }
   }
 
