@@ -12,6 +12,9 @@ class CookieJar(blacklist: EffectiveTldList) {
 
   private case class StoredCookie(name: String, content: String, expires: Option[DateTime], domain: String, path: String, httpOnly: Boolean, secure: Boolean)
 
+  /**
+   * internal storage object for cookie
+   */
   private object StoredCookie {
     implicit def toHttpCookie(src: StoredCookie) = {
       HttpCookie(src.name, src.content, src.expires: Option[DateTime], None, Some(src.domain), Some(src.path), src.secure, src.httpOnly, None)
@@ -27,14 +30,25 @@ class CookieJar(blacklist: EffectiveTldList) {
     }
   }
 
-  private var jar: CookieJar_ = CookieJar_("", Map.empty, Map.empty)
+  private var data: CookieJar_ = CookieJar_("", Map.empty, Map.empty)
 
-  def cookiesfor(uri: Uri) = jar.cookiesfor(uri).map(c ⇒ StoredCookie.toHttpCookie(c))
+  /**
+   * fetch cookies that apply for uri
+   * @param uri
+   * @return collection of cookies
+   */
+  def cookiesfor(uri: Uri): Iterable[HttpCookie] = data.cookiesfor(uri).map(c ⇒ StoredCookie.toHttpCookie(c))
 
+  /**
+   * store cookie in jar
+   * @param cookie new cookie
+   * @param source request url as fallback for cookie domain and path
+   * @return true if cookie is legal and was set, false if cookie does not match url
+   */
   def setCookie(cookie: HttpCookie, source: Uri) = {
     val storedcookie = StoredCookie.toStoredCookie(cookie)(source)
     if (isAllowedFor(storedcookie, source)) {
-      jar = jar.setCookie(storedcookie)
+      data = data.setCookie(storedcookie)
       true
     } else false
   }
@@ -52,6 +66,14 @@ class CookieJar(blacklist: EffectiveTldList) {
 
   }
 
+  /**
+   * represents map of cookies for a specific domain
+   * will be nested for subdomains
+   * top level instance is always just an empty wrapper (empty domainElement, empty map of cookies) for its subdomains
+   * @param domainElement one element of the domain
+   * @param subdomains map of subdomain elements -> other CookieJar_
+   * @param cookies cookies set on this domain by name -> StoredCookie
+   */
   private case class CookieJar_(domainElement: String, subdomains: Map[String, CookieJar_], cookies: Map[String, StoredCookie]) {
     def cookiesfor(uri: Uri) = {
       val domain = uri.authority.host.address
@@ -98,7 +120,10 @@ class CookieJar(blacklist: EffectiveTldList) {
       }
     }
 
-    def removeStale(cookies: Map[String, StoredCookie], cutoff: DateTime) =
+    /**
+     * removes expired cookies
+     */
+    def removeStale(cookies: Map[String, StoredCookie], cutoff: DateTime): Map[String, StoredCookie] =
       cookies.filter(c ⇒ c._2.expires.map(_ > cutoff).getOrElse(true))
   }
 }
