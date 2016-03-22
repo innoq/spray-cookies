@@ -40,7 +40,11 @@ class CookieJar(blacklist: EffectiveTldList) {
      */
     private def extractDirectoryPath(uri: Uri): String = {
       val i = uri.path.toString.lastIndexOf("/")
-      uri.path.toString.substring(0, i + 1) // take the path
+      if (i > 0) {
+        uri.path.toString.substring(0, i) // take the path
+      } else {
+        "/"
+      }
     }
   }
 
@@ -67,6 +71,8 @@ class CookieJar(blacklist: EffectiveTldList) {
     } else false
   }
 
+  override def toString: String = data.toString
+
   private def isAllowedFor(cookie: StoredCookie, source: Uri): Boolean = {
     !blacklist.contains(cookie.domain) &&
       isDomainPostfix(cookie.domain, source.authority.host.address)
@@ -89,6 +95,14 @@ class CookieJar(blacklist: EffectiveTldList) {
    * @param cookies cookies set on this domain by name -> StoredCookie
    */
   private case class CookieJar_(domainElement: String, subdomains: Map[String, CookieJar_], cookies: Map[String, StoredCookie]) {
+
+    override def toString: String = {
+      "CookieJar{" +
+        cookies.map { case (name, cookie) ⇒ cookie }.mkString(", ") +
+        subdomains.map { case (name, subjar) ⇒ s"$name -> $subjar" }.mkString(", ") +
+        "}"
+    }
+
     def cookiesfor(uri: Uri) = {
       val domain = uri.authority.host.address
       val domainelements = domain.split('.').toList.reverse
