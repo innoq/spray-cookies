@@ -1,9 +1,11 @@
 spray-cookies
 =============
 
-A cookiejar exploration for spray-client
+A cookiejar implementation for spray-client
 
 spray-cookies implements a cookiejar that can be plugged in to a spray-client pipeline. The cookiejar itself is mutable so that it remembers the current state
+
+The artifact is defined as "net.spraycookies" %% "spray-cookies" % "0.2" and released in this version, but there are not yet any binaries published in a public repo.
 
 basic usage:
 
@@ -72,4 +74,4 @@ To store cookies received from the http response on this pipeline you can use th
 
 ```
 
-[![Build Status](https://travis-ci.org/martijnhoekstra/spray-cookies.svg)](https://travis-ci.org/martijnhoekstra/spray-cookies)
+[![Build Status](https://travis-ci.org/innoq/spray-cookies.svg)](https://travis-ci.org/innoq/spray-cookies)
