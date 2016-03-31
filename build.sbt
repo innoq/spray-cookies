@@ -30,11 +30,16 @@ libraryDependencies ++= Seq(
   "org.scalacheck"      %% "scalacheck"    % "1.11.3" % "test"
 )
 
-publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
-
 scalariformSettings
 
 ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(RewriteArrowSymbols, true)
   .setPreference(AlignParameters, true)
   .setPreference(AlignSingleLineCaseStatements, true)
+
+publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
+
+lazy val releaseSettings = Seq(
+  publishMavenStyle := true,
+  pomIncludeRepository := { _ => false }
+)
