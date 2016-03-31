@@ -43,3 +43,15 @@ lazy val releaseSettings = Seq(
   publishMavenStyle := true,
   pomIncludeRepository := { _ => false }
 )
+pomExtra :=
+  <licenses>
+    <license>
+      <name> GNU Lesser General Public License</name>
+      <url>http://www.gnu.org/licenses/lgpl-3.0.en.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+    <scm>
+      <connection>scm:git:https://github.com/innoq/spray-cookies.git</connection>
+      <url>https://github.com/innoq/spray-cookies</url>
+    </scm>
